@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Tráfego — Dra. Monique Amorim · NEXTRA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --espresso:#1d1612;--espresso2:#2a201a;--gold:#C8A56B;--gold-lt:#E3CC9E;--gold-deep:#9c7c45;
+    --ink:#2B2520;--muted:#9a8d7e;--line:#E7DFD3;--panel:#F6F0E8;--cream:#FAF6F0;--white:#FFFFFF;
+    --serif:'Cormorant Garamond',Georgia,serif;--sans:'Jost',-apple-system,'Segoe UI',sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:#0c0907;font-family:var(--sans);color:var(--ink);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  #stage{position:relative;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;
+    background:var(--white);overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.7);font-size:1.04vw}
+  @media (max-aspect-ratio:16/9){#stage{font-size:1.85vh}}
+
+  .slide{position:absolute;inset:0;padding:5.4% 5.6%;opacity:0;visibility:hidden;display:flex;flex-direction:column;
+    transition:opacity .4s ease,visibility .4s;z-index:1}
+  .slide.active{opacity:1;visibility:visible;z-index:2}
+  .slide.dark{background:var(--espresso);color:var(--white)}
+
+  /* atmosphere */
+  .atmo{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+  .orb{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;will-change:transform}
+  .dark .orb.a{width:42%;height:75%;left:-8%;top:-20%;background:radial-gradient(circle,rgba(200,165,107,.32),transparent 68%);animation:drift1 14s ease-in-out infinite alternate}
+  .dark .orb.b{width:50%;height:80%;right:-12%;bottom:-25%;background:radial-gradient(circle,rgba(156,124,69,.28),transparent 70%);animation:drift2 17s ease-in-out infinite alternate}
+  .lt-atmo .orb.a{width:46%;height:80%;right:-14%;top:-22%;opacity:.55;background:radial-gradient(circle,rgba(200,165,107,.16),transparent 70%);animation:drift1 16s ease-in-out infinite alternate}
+  @keyframes drift1{from{transform:translate(0,0) scale(1)}to{transform:translate(8%,6%) scale(1.12)}}
+  @keyframes drift2{from{transform:translate(0,0) scale(1)}to{transform:translate(-7%,-5%) scale(1.15)}}
+  .grain{position:absolute;inset:-50%;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grainmove 8s steps(6) infinite}
+  @keyframes grainmove{0%{transform:translate(0,0)}100%{transform:translate(6%,4%)}}
+  .spark{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--gold-lt);opacity:0;box-shadow:0 0 8px var(--gold-lt)}
+  .dark .spark{animation:twinkle 5s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:.85;transform:scale(1)}}
+  .layer{position:relative;z-index:3;display:flex;flex-direction:column;flex:1}
+
+  .eyebrow{font-size:.74em;font-weight:600;letter-spacing:.34em;color:var(--gold-deep);text-transform:uppercase;margin-bottom:.55em}
+  .dark .eyebrow{color:var(--gold)}
+  h1.title{font-family:var(--serif);font-weight:700;font-size:3.05em;line-height:1.02;color:var(--ink);letter-spacing:.01em}
+  .dark h1.title{color:var(--white)}
+  .head{flex:0 0 auto;margin-bottom:1.35em}
+
+  .kinetic .word{display:inline-block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em;vertical-align:top}
+  .kinetic .word .inner{display:inline-block;transform:translateY(115%)}
+  .slide.active .kinetic .word .inner{animation:maskRise .9s var(--ease) both;animation-delay:calc(var(--wd,0)*.07s + .12s)}
+  @keyframes maskRise{from{transform:translateY(115%)}to{transform:translateY(0)}}
+
+  .r{opacity:0}
+  .slide.active .r{animation:fadeUp .85s var(--ease) both;animation-delay:var(--d,0s)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+  .slide.active .r.pop{animation:popIn .8s var(--ease) both;animation-delay:var(--d,0s)}
+  @keyframes popIn{from{opacity:0;transform:translateY(34px) scale(.965)}to{opacity:1;transform:none}}
+  .grow{transform:scaleX(0);transform-origin:left}
+  .slide.active .grow{animation:growX .9s var(--ease) both;animation-delay:var(--d,0s)}
+  @keyframes growX{to{transform:scaleX(1)}}
+
+  .topbar{position:absolute;top:0;left:0;right:0;height:.5em;background:linear-gradient(90deg,var(--gold-deep),var(--gold),var(--gold-lt),var(--gold));background-size:200% 100%;transform-origin:left;z-index:4}
+  .slide.active .topbar{animation:growX 1s var(--ease) both,shimmer 6s linear infinite .9s}
+  @keyframes shimmer{to{background-position:-200% 0}}
+  .logo{font-family:var(--serif);font-weight:700;font-size:2.6em;color:var(--gold);line-height:1;letter-spacing:.04em}
+  .cover .sub{font-size:.82em;letter-spacing:.24em;color:var(--gold-lt);margin-top:.5em;font-weight:300}
+  .cover h1{font-family:var(--serif);font-weight:700;font-size:4.6em;color:#fff;line-height:1;margin-top:auto;letter-spacing:.01em}
+  .cover .lede{font-size:1.35em;color:#d6cabb;margin-top:.55em;font-weight:300;max-width:24em}
+  .cover .by{margin-top:auto;font-size:.95em;letter-spacing:.06em;color:var(--muted);font-weight:300}
+  .cover .by b{color:#fff;font-weight:500;letter-spacing:.12em}
+  .cover .rule{width:14em;height:1px;background:var(--gold);margin:0 0 1em;transform-origin:left}
+
+  .cols{display:flex;gap:2.2%;flex:1}
+  .card{flex:1;border-radius:.55em;padding:2.1em;position:relative;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.1);transition:transform .5s var(--ease),box-shadow .5s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 26px 60px rgba(0,0,0,.18)}
+  .card.lt{background:var(--panel)}
+  .card.dk{background:var(--espresso);color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .card .accent{position:absolute;left:0;top:0;bottom:0;width:.4em;background:var(--gold);transform-origin:top}
+  .slide.active .card .accent{animation:growY 1s var(--ease) both;animation-delay:var(--d,0s)}
+  @keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .crow{display:flex;align-items:center;gap:1em;margin-bottom:.2em}
+  .circ{flex:0 0 auto;width:3.2em;height:3.2em;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(200,165,107,.45)}
+  .circ svg{width:1.5em;height:1.5em}
+  .cardname{font-family:var(--serif);font-weight:700;font-size:2.15em;line-height:1}
+  .cardtag{font-style:italic;font-size:1em;color:var(--gold-deep);margin-top:.2em}
+  .card.dk .cardtag{color:var(--gold-lt)}
+  ul.bul{list-style:none;margin-top:1.4em;display:flex;flex-direction:column;gap:.7em}
+  ul.bul li{position:relative;padding-left:1.4em;font-size:1.12em;line-height:1.35;font-weight:300;opacity:0}
+  .slide.active ul.bul li{animation:fadeUp .7s var(--ease) both;animation-delay:calc(var(--base,0s) + var(--li)*.1s)}
+  ul.bul li::before{content:"";position:absolute;left:0;top:.5em;width:.5em;height:.5em;border-radius:50%;background:var(--gold);box-shadow:0 0 0 .12em rgba(200,165,107,.2)}
+  .card.dk ul.bul li{color:#e8dece}
+  .conclusion{margin-top:1.4em;background:linear-gradient(100deg,var(--gold),var(--gold-lt));color:var(--espresso);border-radius:.45em;padding:1.15em 1.6em;font-size:1.12em;line-height:1.35;font-weight:300;box-shadow:0 12px 30px rgba(200,165,107,.35)}
+  .conclusion b{font-weight:600}
+
+  .ov{display:flex;gap:2.4%;flex:1}
+  .ovcard{flex:1;border-radius:.55em;padding:2.3em;display:flex;flex-direction:column;box-shadow:0 14px 40px rgba(0,0,0,.1);transition:transform .5s var(--ease)}
+  .ovcard:hover{transform:translateY(-6px)}
+  .ovcard.lt{background:var(--panel)}
+  .ovcard.dk{background:var(--espresso);color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .ovcard .clabel{font-size:.78em;font-weight:600;letter-spacing:.26em;color:var(--gold-deep)}
+  .ovcard.dk .clabel{color:var(--gold)}
+  .ovcard .cname{font-family:var(--serif);font-weight:700;font-size:2.6em;margin:.1em 0 .9em;line-height:1}
+  .ovline{display:flex;align-items:center;gap:1em;margin:.5em 0;opacity:0}
+  .slide.active .ovline{animation:fadeUp .7s var(--ease) both;animation-delay:calc(var(--base,0s)+var(--li)*.12s)}
+  .ovline .mini{width:2.7em;height:2.7em;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 5px 14px rgba(200,165,107,.4)}
+  .ovline .mini svg{width:1.3em;height:1.3em}
+  .ovline span{font-size:1.35em;font-weight:400}
+  .ovnote{margin-top:auto;font-style:italic;font-size:1em;color:var(--muted);font-weight:300}
+  .ovcard.dk .ovnote{color:var(--gold-lt)}
+
+  .chips{display:flex;gap:1.4%;margin-bottom:1.4em}
+  .chip{flex:1;background:var(--panel);border-radius:.45em;padding:1.05em 1.2em;display:flex;align-items:center;gap:.9em;box-shadow:0 8px 22px rgba(0,0,0,.06)}
+  .dark .chip{background:var(--espresso2);box-shadow:0 8px 22px rgba(0,0,0,.3)}
+  .chip .mini{width:2.7em;height:2.7em;border-radius:50%;background:var(--gold);flex:0 0 auto;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(200,165,107,.4)}
+  .chip .mini svg{width:1.3em;height:1.3em}
+  .chip .lab{font-size:.68em;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+  .chip .val{font-size:1.1em;font-weight:500;color:var(--ink);margin-top:.1em}
+  .dark .chip .val{color:#fff}
+
+  .sets{display:flex;gap:2.2%;flex:1}
+  .setcard{flex:1;background:#fff;border:1px solid var(--line);border-radius:.5em;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.08);display:flex;flex-direction:column;transition:transform .5s var(--ease)}
+  .setcard:hover{transform:translateY(-5px)}
+  .dark .setcard{background:var(--espresso2);border-color:#4a3c32;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+  .setcard .bar{padding:.9em 1.35em;font-weight:600;letter-spacing:.1em;font-size:1.02em}
+  .setcard .bar.gold{background:linear-gradient(100deg,var(--gold),var(--gold-lt));color:var(--espresso)}
+  .setcard .bar.dk{background:var(--espresso);color:var(--gold-lt)}
+  .setcard .body{padding:1.4em 1.45em}
+  .setcard .body p{font-size:1.12em;line-height:1.35;margin-bottom:.55em;font-weight:300}
+  .dark .setcard .body p{color:#e8dece}
+  .setcard .body p.lead{font-weight:600}
+  .dark .setcard .body p.lead{color:#fff}
+  .strat{margin-top:1.35em;font-style:italic;font-size:1.12em;line-height:1.35;font-weight:300}
+  .strat b{color:var(--gold-deep);font-style:normal;font-weight:600}
+  .dark .strat b{color:var(--gold)}
+
+  .barra-row{display:flex;gap:2.4%;flex:1}
+  .barra-row .setcard{flex:1.5}
+  .eventbox{flex:1;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--espresso);border-radius:.5em;padding:1.7em;box-shadow:0 16px 40px rgba(156,124,69,.5);transition:transform .5s var(--ease)}
+  .eventbox:hover{transform:translateY(-5px)}
+  .eventbox .ehead{display:flex;align-items:center;gap:.9em;margin-bottom:.9em}
+  .eventbox .ecirc{width:3.1em;height:3.1em;border-radius:50%;background:var(--espresso);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .eventbox .ecirc svg{width:1.5em;height:1.5em}
+  .eventbox h3{font-family:var(--serif);font-size:1.95em;font-weight:700;line-height:1}
+  .eventbox p{font-size:1.12em;line-height:1.4;font-weight:400}
+
+  .iv{display:flex;gap:2.4%;flex:1}
+  .ivcard{flex:1;border-radius:.55em;padding:2.4em 2em;text-align:center;display:flex;flex-direction:column;align-items:center;box-shadow:0 14px 40px rgba(0,0,0,.1);transition:transform .5s var(--ease)}
+  .ivcard:hover{transform:translateY(-7px)}
+  .ivcard.lt{background:var(--panel)}
+  .ivcard.dk{background:var(--espresso);color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .ivcard .big{width:5.2em;height:5.2em;border-radius:50%;background:linear-gradient(135deg,var(--gold-lt),var(--gold-deep));display:flex;align-items:center;justify-content:center;margin-bottom:1em;box-shadow:0 12px 30px rgba(200,165,107,.5);animation:floaty 4s ease-in-out infinite}
+  .ivcard .big svg{width:2.5em;height:2.5em}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .ivcard h2{font-family:var(--serif);font-size:2.3em;font-weight:700;line-height:1}
+  .ivcard .place{font-style:italic;color:var(--gold-deep);margin:.15em 0 1.1em;font-size:1.15em}
+  .ivcard.dk .place{color:var(--gold-lt)}
+  .ivcard ul{list-style:none;text-align:left;display:flex;flex-direction:column;gap:.6em}
+  .ivcard ul li{position:relative;padding-left:1.4em;font-size:1.12em;line-height:1.3;font-weight:300}
+  .ivcard ul li::before{content:"";position:absolute;left:0;top:.5em;width:.46em;height:.46em;border-radius:50%;background:var(--gold)}
+  .ivcard.dk ul li{color:#e8dece}
+
+  .lede2{font-size:1.3em;line-height:1.4;margin-bottom:1.4em;color:var(--ink);font-weight:300}
+  .proof{display:flex;gap:2.2%;flex:1}
+  .pcard{flex:1;background:var(--espresso);color:#fff;border-radius:.55em;padding:1.9em;box-shadow:0 14px 40px rgba(0,0,0,.35);transition:transform .5s var(--ease)}
+  .pcard:hover{transform:translateY(-7px)}
+  .pcard .circ{margin-bottom:1em}
+  .pcard h3{font-family:var(--serif);font-size:1.75em;font-weight:700;margin-bottom:.4em;line-height:1}
+  .pcard p{font-size:1.08em;line-height:1.35;color:#ddd3c4;font-weight:300}
+
+  .phases{display:flex;gap:2.2%;flex:1}
+  .phase{flex:1;border-radius:.55em;padding:1.9em;position:relative;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.1);display:flex;flex-direction:column;transition:transform .5s var(--ease)}
+  .phase:hover{transform:translateY(-6px)}
+  .phase.lt{background:var(--panel)}
+  .phase.dk{background:var(--espresso);color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .phase .topgold{position:absolute;top:0;left:0;right:0;height:.3em;background:var(--gold);transform-origin:left}
+  .slide.active .phase .topgold{animation:growX .9s var(--ease) both;animation-delay:var(--d,0s)}
+  .phase .pn{font-size:.78em;font-weight:600;letter-spacing:.24em;color:var(--gold-deep);margin-top:.3em}
+  .phase.dk .pn{color:var(--gold)}
+  .phase h3{font-family:var(--serif);font-size:2.1em;font-weight:700;margin:.1em 0 .55em;line-height:1}
+  .phase .amt{font-size:1.25em;font-weight:500;line-height:1.25}
+  .phase.dk .amt{color:var(--gold-lt)}
+  .phase .pnote{margin-top:auto;padding-top:.9em;font-style:italic;font-size:1em;color:var(--muted);font-weight:300}
+  .phase.dk .pnote{color:#ddd3c4}
+  .totalbar{margin-top:1.4em;background:linear-gradient(100deg,var(--gold),var(--gold-lt));color:var(--espresso);border-radius:.45em;padding:1.15em 1.6em;display:flex;align-items:center;justify-content:space-between;font-size:1.3em;font-weight:300;box-shadow:0 14px 34px rgba(200,165,107,.4)}
+  .totalbar b{font-weight:600}
+  .totalbar .adj{font-style:italic;font-size:.66em;opacity:.85}
+  .num-anim{font-variant-numeric:tabular-nums}
+
+  .steps{display:flex;flex-direction:column;gap:1.05em;margin-top:1.3em}
+  .step{display:flex;align-items:center;gap:1.2em;opacity:0}
+  .slide.active .step{animation:slideRight .8s var(--ease) both;animation-delay:calc(.3s + var(--li)*.13s)}
+  @keyframes slideRight{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+  .step .num{width:2.8em;height:2.8em;border-radius:50%;background:linear-gradient(135deg,var(--gold-lt),var(--gold-deep));color:var(--espresso);font-family:var(--serif);font-weight:700;font-size:1.5em;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 8px 20px rgba(200,165,107,.5)}
+  .step .txt{font-size:1.5em;color:#fff;font-weight:300}
+  .closeby{margin-top:auto}
+  .closeby .rule{width:11em;height:1px;background:var(--gold);margin-bottom:.85em;transform-origin:left}
+  .slide.active .closeby .rule{animation:growX 1s var(--ease) both;animation-delay:1s}
+  .closeby span{font-size:1em;letter-spacing:.06em;font-weight:300}
+  .closeby b{color:#fff;font-weight:500;letter-spacing:.12em}.closeby em{color:var(--gold-lt);font-style:normal}
+
+  #prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold-deep),var(--gold-lt));z-index:40;width:0;transition:width .6s var(--ease);box-shadow:0 0 10px rgba(200,165,107,.6)}
+  #nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:30;background:rgba(29,22,18,.78);backdrop-filter:blur(10px);padding:9px 16px;border-radius:40px;border:1px solid rgba(200,165,107,.4);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  #nav button{background:none;border:none;color:var(--gold-lt);cursor:pointer;font-size:18px;line-height:1;padding:5px 9px;border-radius:8px;transition:.25s}
+  #nav button:hover{background:rgba(200,165,107,.2);color:#fff;transform:scale(1.1)}
+  #counter{color:#d6cabb;font-size:13px;min-width:52px;text-align:center;letter-spacing:.08em;font-weight:300}
+  .dots{display:flex;gap:7px}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(227,204,158,.35);cursor:pointer;transition:.3s var(--ease)}
+  .dot.on{background:var(--gold);width:22px;border-radius:4px}
+  #hint{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);color:#8a7c6c;font-size:12px;z-index:30;transition:opacity .8s;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="stage">
+
+  <section class="slide dark cover active">
+    <div class="atmo"><span class="orb a"></span><span class="orb b"></span><span class="grain"></span>
+      <span class="spark" style="left:22%;top:30%;animation-delay:.4s"></span><span class="spark" style="left:70%;top:22%;animation-delay:1.6s"></span><span class="spark" style="left:84%;top:64%;animation-delay:2.7s"></span><span class="spark" style="left:40%;top:78%;animation-delay:3.4s"></span></div>
+    <div class="topbar"></div>
+    <div class="layer">
+      <div class="logo r" style="--d:.1s">MA</div>
+      <div class="sub r" style="--d:.25s">DRA. MONIQUE AMORIM · ESTÉTICA AVANÇADA</div>
+      <h1 class="kinetic" style="margin-top:auto">Plano de Tráfego Pago</h1>
+      <p class="lede r" style="--d:.7s">Estratégia de captação de pacientes para São Gonçalo e Barra da Tijuca</p>
+      <div class="by" style="margin-top:auto"><div class="rule grow" style="--d:.85s"></div><span class="r" style="--d:1s">Apresentado por <b>NEXTRA DIGITAL</b></span></div>
+    </div>
+  </section>
+
+  <section class="slide lt-atmo">
+    <div class="atmo"><span class="orb a"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">Diagnóstico</div><h1 class="title kinetic">Dois mercados, dois comportamentos</h1></div>
+      <div class="cols">
+        <div class="card lt r pop" style="--d:.5s"><span class="accent" style="--d:.7s"></span>
+          <div class="crow"><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+            <div><div class="cardname">São Gonçalo</div><div class="cardtag">Sua base · Alcântara</div></div></div>
+          <ul class="bul" style="--base:.7s"><li style="--li:1">Converte com imagem estática</li><li style="--li:2">Público mais fácil de conquistar</li><li style="--li:3">Objetivo: elevar o ticket médio</li></ul>
+        </div>
+        <div class="card dk r pop" style="--d:.65s"><span class="accent" style="--d:.85s"></span>
+          <div class="crow"><div class="circ"><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg></div>
+            <div><div class="cardname">Barra da Tijuca</div><div class="cardtag">Mercado premium · em retorno</div></div></div>
+          <ul class="bul" style="--base:.85s"><li style="--li:1">Público exigente e disputado</li><li style="--li:2">Exige vídeo e prova social</li><li style="--li:3">Imagem estática não para o scroll</li></ul>
+        </div>
+      </div>
+      <div class="conclusion r" style="--d:1.2s"><b>A decisão:</b> duas campanhas separadas. Juntas, o algoritmo joga toda a verba no mercado mais barato e a Barra não recebe entrega.</div>
+    </div>
+  </section>
+
+  <section class="slide lt-atmo">
+    <div class="atmo"><span class="orb a"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">Estrutura</div><h1 class="title kinetic">Como as campanhas vão funcionar</h1></div>
+      <div class="ov">
+        <div class="ovcard lt r pop" style="--d:.5s"><div class="clabel">CAMPANHA 1 · AGORA</div><div class="cname">São Gonçalo</div>
+          <div class="ovline" style="--base:.7s;--li:1"><div class="mini"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3l9 5-9 5-9-5 9-5zm0 7.5L21 15l-9 5-9-5 9-4.5z"/></svg></div><span>1 conjunto · ativa agora</span></div>
+          <div class="ovline" style="--base:.7s;--li:2"><div class="mini"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 17l-5-5-7 7"/></svg></div><span>Formato: imagem</span></div>
+          <div class="ovnote">Onde R$ 15 a 20/dia rende de verdade.</div></div>
+        <div class="ovcard dk r pop" style="--d:.65s"><div class="clabel">CAMPANHA 2 · PRÓXIMA FASE</div><div class="cname">Barra da Tijuca</div>
+          <div class="ovline" style="--base:.85s;--li:1"><div class="mini"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3l9 5-9 5-9-5 9-5zm0 7.5L21 15l-9 5-9-5 9-4.5z"/></svg></div><span>Orgânica agora</span></div>
+          <div class="ovline" style="--base:.85s;--li:2"><div class="mini"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div><span>Formato: vídeo</span></div>
+          <div class="ovnote">Entra como tráfego pago quando a verba subir.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide lt-atmo">
+    <div class="atmo"><span class="orb a"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">Campanha 1 · São Gonçalo</div><h1 class="title kinetic">A máquina de agendamentos</h1></div>
+      <div class="chips">
+        <div class="chip r" style="--d:.45s"><div class="mini"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#fff"/></svg></div><div><div class="lab">Objetivo</div><div class="val">Conversas no WhatsApp</div></div></div>
+        <div class="chip r" style="--d:.55s"><div class="mini"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 17l-5-5-7 7"/></svg></div><div><div class="lab">Formato</div><div class="val">Imagem estática</div></div></div>
+        <div class="chip r" style="--d:.65s"><div class="mini"><svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3h12l3 6-9 12L3 9l3-6z"/></svg></div><div><div class="lab">Ângulo</div><div class="val">Ticket alto</div></div></div>
+      </div>
+      <div class="sets">
+        <div class="setcard r pop" style="--d:.7s"><div class="bar gold">CONJUNTO 1 · FRIO · ATIVO AGORA</div><div class="body"><p class="lead">Mulheres 30 a 55 anos</p><p>São Gonçalo + Niterói (puxa renda maior de Icaraí)</p><p>Segmentação comportamental: compradoras engajadas e interesse em estética premium</p></div></div>
+        <div class="setcard r pop" style="--d:.82s"><div class="bar dk">CONJUNTO 2 · REMARKETING (PRÓXIMA FASE)</div><div class="body"><p class="lead">Quem já demonstrou interesse</p><p>Engajou no perfil nos últimos 30/60 dias</p><p>Assistiu 75% dos vídeos + base de clientes atual</p></div></div>
+      </div>
+      <div class="strat r" style="--d:1.05s"><b>Estratégia de ticket:</b> liderar com ultrassom microfocado e bioestimulador de colágeno, não com Botox. Atrai quem valoriza resultado e paga mais.</div>
+    </div>
+  </section>
+
+  <section class="slide dark">
+    <div class="atmo"><span class="orb a"></span><span class="orb b"></span><span class="grain"></span><span class="spark" style="left:60%;top:35%;animation-delay:1s"></span><span class="spark" style="left:30%;top:60%;animation-delay:2.4s"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">Campanha 2 · Barra da Tijuca</div><h1 class="title kinetic">Posicionamento de autoridade</h1></div>
+      <div class="chips">
+        <div class="chip r" style="--d:.45s"><div class="mini"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#fff"/></svg></div><div><div class="lab">Objetivo</div><div class="val">Conversas no WhatsApp</div></div></div>
+        <div class="chip r" style="--d:.55s"><div class="mini"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div><div><div class="lab">Formato</div><div class="val">Vídeo</div></div></div>
+        <div class="chip r" style="--d:.65s"><div class="mini"><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg></div><div><div class="lab">Ângulo</div><div class="val">Exclusividade</div></div></div>
+      </div>
+      <div class="barra-row">
+        <div class="setcard r pop" style="--d:.7s"><div class="bar dk">CONJUNTO FRIO · ENTRA NA PRÓXIMA FASE</div><div class="body"><p class="lead">Mulheres 30 a 55 anos</p><p>Barra da Tijuca + Recreio + Joá</p><p>Comportamento de alto padrão e interesse em estética premium</p></div></div>
+        <div class="eventbox r pop" style="--d:.85s"><div class="ehead"><div class="ecirc"><svg viewBox="0 0 24 24" fill="none" stroke="#C8A56B" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M9 15l2 2 4-4"/></svg></div><h3>Atendimento 17/06</h3></div><p>Por enquanto o dia 17 é trabalhado no orgânico e com as influenciadoras. A Barra paga entra quando a verba subir.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide lt-atmo">
+    <div class="atmo"><span class="orb a"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">Formato por mercado</div><h1 class="title kinetic">Imagem onde converte, vídeo onde decide</h1></div>
+      <div class="iv">
+        <div class="ivcard lt r pop" style="--d:.5s"><div class="big"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 17l-5-5-7 7"/></svg></div><h2>Imagem</h2><div class="place">São Gonçalo</div><ul><li>Estática já converte nesse público</li><li>Custo de entrega menor</li><li>Aproveita os criativos atuais</li></ul></div>
+        <div class="ivcard dk r pop" style="--d:.65s"><div class="big"><svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div><h2>Vídeo</h2><div class="place">Barra da Tijuca</div><ul><li>Constrói autoridade e confiança</li><li>Para o scroll de um público exigente</li><li>Mostra a Dra. e o resultado real</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide lt-atmo">
+    <div class="atmo"><span class="orb a"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">A virada da Barra</div><h1 class="title kinetic">Conteúdo de prova social no dia 17</h1></div>
+      <p class="lede2 r" style="--d:.5s">No atendimento do dia 17, a Monique grava os procedimentos nas influenciadoras com a videomaker dela. A NEXTRA orienta o que captar e transforma esse material em anúncio.</p>
+      <div class="proof">
+        <div class="pcard r pop" style="--d:.6s"><div class="circ"><svg viewBox="0 0 24 24" fill="#fff"><path d="M4 6h11v12H4zM16 9l5-3v12l-5-3z"/></svg></div><h3>Procedimento real</h3><p>A Dra. em ação, capturado pela videomaker no local.</p></div>
+        <div class="pcard r pop" style="--d:.72s"><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 5h16v11H9l-4 4V5z"/><circle cx="9" cy="10.5" r="1" fill="#fff" stroke="none"/><circle cx="12.5" cy="10.5" r="1" fill="#fff" stroke="none"/><circle cx="16" cy="10.5" r="1" fill="#fff" stroke="none"/></svg></div><h3>Depoimento</h3><p>A influenciadora contando a experiência na própria voz.</p></div>
+        <div class="pcard r pop" style="--d:.84s"><div class="circ"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 17.3 5.8 20.9l1.6-6.8L2.2 8.9l6.9-.6z"/></svg></div><h3>Alcance orgânico</h3><p>Elas postam para o público delas e validam a marca.</p></div>
+      </div>
+      <div class="strat r" style="--d:1.05s"><b>Resultado:</b> mesmo sem lotar a agenda do dia 17, fica o ativo de vídeo que faz a Barra escalar nas próximas semanas.</div>
+    </div>
+  </section>
+
+  <section class="slide lt-atmo">
+    <div class="atmo"><span class="orb a"></span></div>
+    <div class="layer">
+      <div class="head"><div class="eyebrow r">Investimento e cronograma</div><h1 class="title kinetic">Pouca verba pede foco, não divisão</h1></div>
+      <div class="phases">
+        <div class="phase lt r pop" style="--d:.5s"><div class="topgold" style="--d:.7s"></div><div class="pn">FASE 1 · AGORA</div><h3>Foco total</h3><div class="amt">100% São Gonçalo<br>R$ 15 a 20/dia</div><div class="pnote">Onde o real rende mais. Gera caixa e prova o ROI.</div></div>
+        <div class="phase lt r pop" style="--d:.62s"><div class="topgold" style="--d:.82s"></div><div class="pn">FASE 2 · 17/06</div><h3>Barra orgânica</h3><div class="amt">Conteúdo com influenciadoras</div><div class="pnote">Semeia a Barra sem gastar mídia. Custo R$ 0.</div></div>
+        <div class="phase dk r pop" style="--d:.74s"><div class="topgold" style="--d:.94s"></div><div class="pn">FASE 3 · COM RETORNO</div><h3>Escala</h3><div class="amt">Sobe a verba + Barra paga</div><div class="pnote">Com o caixa de SG, abre a Barra e o remarketing.</div></div>
+      </div>
+      <div class="totalbar r" style="--d:1.05s"><div>Investimento atual: <b>R$ 15 a <span class="num-anim" data-to="20">20</span>/dia</b> &nbsp;· 100% São Gonçalo</div><div class="adj">A verba sobe conforme o retorno aparece.</div></div>
+    </div>
+  </section>
+
+  <section class="slide dark">
+    <div class="atmo"><span class="orb a"></span><span class="orb b"></span><span class="grain"></span><span class="spark" style="left:75%;top:30%;animation-delay:1.2s"></span><span class="spark" style="left:50%;top:70%;animation-delay:2.8s"></span></div>
+    <div class="topbar"></div>
+    <div class="layer">
+      <div class="head" style="margin-top:.6em"><div class="eyebrow r">Próximos passos</div><h1 class="title kinetic">Por onde começamos</h1></div>
+      <div class="steps">
+        <div class="step" style="--li:1"><div class="num">1</div><div class="txt">Aprovação do plano e da verba (R$ 15 a 20/dia)</div></div>
+        <div class="step" style="--li:2"><div class="num">2</div><div class="txt">Subida da campanha de São Gonçalo no Gerenciador</div></div>
+        <div class="step" style="--li:3"><div class="num">3</div><div class="txt">Roteiro e direção do conteúdo que ela grava no dia 17 (Barra orgânica)</div></div>
+        <div class="step" style="--li:4"><div class="num">4</div><div class="txt">Com retorno, escala a verba e abre a Barra paga</div></div>
+      </div>
+      <div class="closeby"><div class="rule"></div><span class="r" style="--d:1.1s"><b>NEXTRA DIGITAL</b> &nbsp;·&nbsp; <em>Marketing que vende</em></span></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="hint">Use as setas ← → do teclado para navegar</div>
+<div id="nav"><button id="prev" aria-label="Anterior">&#10094;</button><div class="dots" id="dots"></div><span id="counter"></span><button id="next" aria-label="Próximo">&#10095;</button></div>
+
+<script>
+  document.querySelectorAll('.kinetic').forEach(el=>{
+    const words=el.textContent.trim().split(/\s+/);
+    el.innerHTML=words.map((w,k)=>`<span class="word" style="--wd:${k}"><span class="inner">${w}</span></span>`).join(' ');
+  });
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots'),counter=document.getElementById('counter'),prog=document.getElementById('prog');
+  let i=0;
+  slides.forEach((_,k)=>{const d=document.createElement('div');d.className='dot';d.onclick=e=>{e.stopPropagation();go(k)};dotsWrap.appendChild(d);});
+  const dots=[...document.querySelectorAll('.dot')];
+  function countUp(slide){
+    slide.querySelectorAll('.num-anim').forEach(el=>{
+      const to=+el.dataset.to,fmt=el.dataset.fmt,dur=1100,t0=performance.now();
+      function tick(t){const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);let v=Math.round(to*e);el.textContent=fmt?v.toLocaleString('pt-BR'):v;if(p<1)requestAnimationFrame(tick);}
+      requestAnimationFrame(tick);
+    });
+  }
+  function render(replay){
+    slides.forEach((s,k)=>{if(k===i){if(replay){s.classList.remove('active');void s.offsetWidth;}s.classList.add('active');}else s.classList.remove('active');});
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+    counter.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=(i/(slides.length-1)*100)+'%';
+    if(slides[i].querySelector('.num-anim'))setTimeout(()=>countUp(slides[i]),900);
+  }
+  function go(n){const c=Math.max(0,Math.min(slides.length-1,n));if(c===i)return;i=c;render(true);}
+  function next(){go(i+1)}function prev(){go(i-1)}
+  document.getElementById('next').onclick=e=>{e.stopPropagation();next()};
+  document.getElementById('prev').onclick=e=>{e.stopPropagation();prev()};
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+    if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+    if(e.key==='Home')go(0);if(e.key==='End')go(slides.length-1);
+  });
+  document.getElementById('stage').addEventListener('click',e=>{const r=e.currentTarget.getBoundingClientRect();(e.clientX-r.left>r.width/2)?next():prev();});
+  setTimeout(()=>{document.getElementById('hint').style.opacity='0'},3800);
+  render(false);
+</script>
+</body>
+</html>
