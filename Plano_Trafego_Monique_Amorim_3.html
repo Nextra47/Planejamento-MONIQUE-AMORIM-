@@ -209,6 +209,71 @@
   .dot{width:7px;height:7px;border-radius:50%;background:rgba(227,204,158,.35);cursor:pointer;transition:.3s var(--ease)}
   .dot.on{background:var(--gold);width:22px;border-radius:4px}
   #hint{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);color:#8a7c6c;font-size:12px;z-index:30;transition:opacity .8s;letter-spacing:.05em}
+
+  /* ── MOBILE PORTRAIT ─────────────────────────────────────────────── */
+  @media (orientation:portrait) and (max-width:900px){
+    body{overflow:hidden}
+    #stage{
+      width:100vw;
+      height:100svh;
+      height:100dvh;
+      max-height:none;
+      max-width:none;
+      font-size:3.8vw;
+      box-shadow:none;
+    }
+    .slide{padding:6% 5% 16%}
+    .head{margin-bottom:.7em}
+    h1.title{font-size:2.1em;line-height:1.05}
+    .cover h1{font-size:2.8em}
+    .cover .lede{font-size:1.1em}
+
+    /* Empilha todas as colunas lado-a-lado */
+    .cols,.ov,.iv,.proof,.phases,.sets,.barra-row{
+      flex-direction:column;gap:1.6%;overflow-y:auto;
+      scrollbar-width:none;-ms-overflow-style:none
+    }
+    .cols::-webkit-scrollbar,.ov::-webkit-scrollbar,
+    .iv::-webkit-scrollbar,.proof::-webkit-scrollbar,
+    .phases::-webkit-scrollbar,.sets::-webkit-scrollbar,
+    .barra-row::-webkit-scrollbar{display:none}
+
+    /* Cards não crescem sozinhos em coluna */
+    .card,.ovcard,.ivcard,.pcard,.phase,.setcard{flex:none}
+    .barra-row .setcard{flex:none}
+    .eventbox{flex:none;margin-top:0}
+
+    /* Chips em 2 colunas */
+    .chips{flex-wrap:wrap;gap:2%;margin-bottom:1em}
+    .chip{flex:1 1 44%;min-width:0}
+
+    /* Fontes internas menores para caber */
+    .cardname,.ovcard .cname{font-size:1.55em}
+    ul.bul li,.setcard .body p,.ivcard ul li,
+    .ovline span,.step .txt,.strat,.conclusion,
+    .lede2{font-size:1em;line-height:1.35}
+    .lede2{margin-bottom:.7em}
+    .phase .amt{font-size:1.1em}
+    .ivcard .place{margin-bottom:.6em}
+    .ivcard .big{width:4em;height:4em;margin-bottom:.7em}
+    .ivcard .big svg{width:2em;height:2em}
+
+    /* Barra total empilhada */
+    .totalbar{flex-direction:column;gap:.4em;
+      text-align:center;font-size:1em;padding:.9em 1em}
+
+    /* Passos */
+    .steps{gap:.8em;margin-top:.9em}
+    .step .num{width:2.4em;height:2.4em;font-size:1.3em}
+
+    /* Nav de slides */
+    #nav{bottom:8px;padding:7px 11px;gap:10px}
+    #nav button{font-size:16px;padding:4px 8px}
+    #counter{font-size:11px;min-width:42px}
+    .dot{width:6px;height:6px}
+    .dot.on{width:18px}
+    #hint{bottom:50px;font-size:10px}
+  }
 </style>
 </head>
 <body>
@@ -353,7 +418,7 @@
 
 </div>
 
-<div id="hint">Use as setas ← → do teclado para navegar</div>
+<div id="hint">Toque nos botões ou deslize para navegar</div>
 <div id="nav"><button id="prev" aria-label="Anterior">&#10094;</button><div class="dots" id="dots"></div><span id="counter"></span><button id="next" aria-label="Próximo">&#10095;</button></div>
 
 <script>
