@@ -222,7 +222,8 @@
       font-size:3.8vw;
       box-shadow:none;
     }
-    .slide{padding:6% 5% 16%}
+    .slide{padding:6% 5% 16%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .layer{overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:1em}
     .head{margin-bottom:.7em}
     h1.title{font-size:2.1em;line-height:1.05}
     .cover h1{font-size:2.8em}
@@ -454,7 +455,12 @@
     if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
     if(e.key==='Home')go(0);if(e.key==='End')go(slides.length-1);
   });
-  document.getElementById('stage').addEventListener('click',e=>{const r=e.currentTarget.getBoundingClientRect();(e.clientX-r.left>r.width/2)?next():prev();});
+  // Clique no stage só em desktop (portrait mobile usa botões do nav)
+  const isMobilePortrait=()=>window.innerWidth<900&&window.innerHeight>window.innerWidth;
+  document.getElementById('stage').addEventListener('click',e=>{
+    if(isMobilePortrait())return;
+    const r=e.currentTarget.getBoundingClientRect();(e.clientX-r.left>r.width/2)?next():prev();
+  });
   setTimeout(()=>{document.getElementById('hint').style.opacity='0'},3800);
   render(false);
 </script>
